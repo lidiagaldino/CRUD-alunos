@@ -67,7 +67,7 @@ const deletarAluno = async function(id){
     }
 
     const deletarAluno = require('../model/DAO/aluno.js')
-    const verificar = await deletarAluno.selectAlunoById(id)
+    const verificar = await buscarAluno(id)
 
     if (verificar) {
         

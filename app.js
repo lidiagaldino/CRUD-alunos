@@ -3,7 +3,7 @@
     Objetivo: API responsável pela manipulação de dados do Back-End (GET, POST, PUT, DELETE)
     Autor: Lídia Galdino
     Data de criação: 10/10/22
-    Última modificação em: 13/10/22
+    Última modificação em: 27/10/22
     Versão: 1.0 
 
     Anotações:
@@ -47,7 +47,7 @@ const jsonParser = bodyParser.json()
 */
 
 //EndPoint listar alunos
-app.get('/alunos', cors(), async function(request, response, next){
+app.get('/v1/alunos', cors(), async function(request, response, next){
 
     let statusCode
     let message = {}
@@ -69,7 +69,7 @@ app.get('/alunos', cors(), async function(request, response, next){
 })
 
 //EndPoint para inserir um novo aluno
-app.post('/aluno', cors(), jsonParser, async function(request, response, next){
+app.post('/v1/aluno', cors(), jsonParser, async function(request, response, next){
 
     let statusCode
     let message
@@ -104,7 +104,7 @@ app.post('/aluno', cors(), jsonParser, async function(request, response, next){
     response.json(message)
 })
 
-app.put('/aluno/:id', cors(), jsonParser, async function(request, response, next){
+app.put('/v1/aluno/:id', cors(), jsonParser, async function(request, response, next){
 
     let statusCode
     let message
@@ -147,7 +147,7 @@ app.put('/aluno/:id', cors(), jsonParser, async function(request, response, next
     
 })
 
-app.delete('/aluno/:id', cors(), jsonParser, async function(request,response,next){
+app.delete('/v1/aluno/:id', cors(), jsonParser, async function(request,response,next){
 
     let statusCode
     let message
@@ -170,7 +170,7 @@ app.delete('/aluno/:id', cors(), jsonParser, async function(request,response,nex
 
 })
 
-app.get('/aluno/:id', cors(), async function(request, response, next){
+app.get('/v1/aluno/:id', cors(), async function(request, response, next){
 
     let statusCode
     let message
