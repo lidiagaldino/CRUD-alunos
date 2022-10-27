@@ -22,6 +22,8 @@ const novoAluno = async function(aluno){
     const novoAluno = require('../model/DAO/aluno.js')
     
     const result = await novoAluno.insertAluno(aluno)
+    //console.log(Number(result[0].LAST_INSERT_ID()))
+    console.log(result[0].id)
 
     if (result) {
         return {status: 201, message: MESSAGE_SUCCESS.INSERT_ITEM}

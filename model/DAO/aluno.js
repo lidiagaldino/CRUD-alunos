@@ -23,7 +23,8 @@ const insertAluno = async function(aluno) {
         const result = await prisma.$executeRawUnsafe(sql)
     
         if (result) {
-            return true
+            const id = await prisma.$queryRaw `select cast(LAST_INSERT_ID() as float) as id;`
+            return id
         } else{
             return false
         }
