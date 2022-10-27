@@ -56,9 +56,6 @@ const atualizarAluno = async function(aluno){
     } else{
         return {message: MESSAGE_ERROR.NOT_FOUND_DB, status: 404} 
     }
-
-
-
 }
 
 const deletarAluno = async function(id){
