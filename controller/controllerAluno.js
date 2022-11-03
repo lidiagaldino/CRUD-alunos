@@ -8,6 +8,7 @@
  
 */
 
+const { PrismaClientRustPanicError } = require('@prisma/client/runtime/index.js')
 const {MESSAGE_ERROR, MESSAGE_SUCCESS} = require('../modulo/config.js')
 
 const novoAluno = async function(aluno){
@@ -20,16 +21,38 @@ const novoAluno = async function(aluno){
     } 
 
     const novoAluno = require('../model/DAO/aluno.js')
+    const novoAlunoCurso = require('../model/DAO/aluno_curso.js')
     
-    const result = await novoAluno.insertAluno(aluno)
+    const resultAluno = await novoAluno.insertAluno(aluno)
     //console.log(Number(result[0].LAST_INSERT_ID()))
-    console.log(result[0].id)
 
-    if (result) {
-        return {status: 201, message: MESSAGE_SUCCESS.INSERT_ITEM}
-    } else{
+    if (resultAluno) {
+        const lastId = await novoAluno.selectLastId()
+        if (lastId > 0) {
+            const date = new Date().getFullYear()
+            let alunoCurso = {
+                idAluno: lastId,
+                idCurso: aluno.curso[0].id,
+                matricula: `${lastId}${aluno.curso[0].id}${date}`,
+                status_aluno: 'Cursando'
+            }
+
+            const resultNovoAlunoCurso = await novoAlunoCurso.insertAlunoCurso(alunoCurso)
+
+            if (resultNovoAlunoCurso) {
+                return {status: 201, message: MESSAGE_SUCCESS.INSERT_ITEM}
+            }else{
+                await deletarAluno(lastId)
+                return {message: MESSAGE_ERROR.INTERNAL_SERVER_ERROR, status: 500}
+            }
+        }else{
+            await deletarAluno(lastId)
+            return {message: MESSAGE_ERROR.INTERNAL_SERVER_ERROR, status: 500}
+        }
+    }else{
         return {message: MESSAGE_ERROR.INTERNAL_SERVER_ERROR, status: 500}
     }
+    
 
 }
 
@@ -89,8 +112,13 @@ const listarAlunos = async function() {
     let dadosAlunosJSON = {}
     
     const { selectAllAlunos } = require('../model/DAO/aluno.js')
+    const curso = require('../model/DAO/aluno_curso.js')
 
     const dadosAlunos = await selectAllAlunos()
+
+    await Promise.all(dadosAlunos.map(async (item) => {
+        item.curso = await curso.searchAluno(item.id)
+    }))
 
     if (dadosAlunos) {
 
@@ -115,13 +143,23 @@ const buscarAluno = async function(id) {
     }
 
     const { selectAlunoById } = require('../model/DAO/aluno.js')
+    const { searchAluno } = require('../model/DAO/aluno_curso.js')
     const dadosAluno = await selectAlunoById(id)
 
     if (dadosAluno) {
         
-        dadosAlunoJSON.aluno = dadosAluno
+        const dadosAlunoCurso = await searchAluno(id)
 
-        return dadosAlunoJSON
+        if (dadosAlunoCurso) {
+            dadosAluno[0].curso = dadosAlunoCurso
+            dadosAlunoJSON.aluno = dadosAluno
+
+            return dadosAlunoJSON
+        } else{
+            dadosAlunoJSON.aluno = dadosAluno
+
+            return dadosAlunoJSON
+        }
 
     } else{
         return false

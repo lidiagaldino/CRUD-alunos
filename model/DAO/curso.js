@@ -1,3 +1,13 @@
+/*
+
+    Objetivo: Arquivo responsável pela manipulação de dados com o BD (insert, update, delete e select)
+    Autor: Lídia Galdino
+    Data de criação: 06/10/22
+    Última modificação em: 31/10/22
+    Versão: 1.0 
+
+*/
+
 const selectAllCursos = async () =>{
 
     const { PrismaClient } = require('@prisma/client')

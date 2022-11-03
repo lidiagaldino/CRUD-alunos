@@ -3,19 +3,21 @@
     Objetivo: Arquivo responsável pela manipulação de dados com o BD (insert, update, delete e select)
     Autor: Lídia Galdino
     Data de criação: 06/10/22
-    Última modificação em: 13/10/22
+    Última modificação em: 31/10/22
     Versão: 1.0 
 
 */
+
+const { PrismaClient } = require('@prisma/client')
+    
+const prisma = new PrismaClient()
 
 const e = require('express')
 
 const insertAluno = async function(aluno) {
 
     try {
-        const { PrismaClient } = require('@prisma/client')
-    
-        const prisma = new PrismaClient()
+        
     
         let sql = `insert into tbl_aluno(nome, foto, rg, cpf, email, data_nascimento, telefone, celular, sexo)
                         values('${aluno.nome}', '${aluno.foto}', '${aluno.rg}', '${aluno.cpf}', '${aluno.email}', '${aluno.data_nascimento}', '${aluno.telefone}', '${aluno.celular}', '${aluno.sexo}')`
@@ -23,8 +25,7 @@ const insertAluno = async function(aluno) {
         const result = await prisma.$executeRawUnsafe(sql)
     
         if (result) {
-            const id = await prisma.$queryRaw `select cast(LAST_INSERT_ID() as float) as id;`
-            return id
+            return true
         } else{
             return false
         }
@@ -33,6 +34,20 @@ const insertAluno = async function(aluno) {
         return false
     }
     
+}
+
+const selectLastId = async function(){
+
+    const sql = `select cast(id as float) as id from tbl_aluno order by id desc limit 1`
+
+    const result = await prisma.$queryRawUnsafe(sql)
+    console.log(result)
+
+    if (result) {
+        return result[0].id
+    } else{
+        return false
+    }
 }
 
 const updateAluno = async function(aluno) {
@@ -129,5 +144,6 @@ module.exports = {
     insertAluno,
     updateAluno,
     deleteAluno,
-    selectAlunoById
+    selectAlunoById,
+    selectLastId
 }
